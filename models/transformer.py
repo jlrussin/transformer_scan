@@ -66,7 +66,7 @@ class Transformer(nn.Module):
     def get_masks(self,src,trg):
         sz = trg.shape[0]
         trg_mask = self.transformer.generate_square_subsequent_mask(sz)
-        trg_mask = trg_mask.to(device)
+        trg_mask = trg_mask.to(self.device)
         src_kp_mask = (src == self.pad_idx).transpose(0,1).to(self.device)
         trg_kp_mask = (trg == self.pad_idx).transpose(0,1).to(self.device)
         return trg_mask,src_kp_mask,trg_kp_mask
