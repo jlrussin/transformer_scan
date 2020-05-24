@@ -29,7 +29,7 @@ class PositionalEncoding(nn.Module):
 class Transformer(nn.Module):
     def __init__(self,src_vocab_size,trg_vocab_size,d_model,nhead,
                  num_encoder_layers,num_decoder_layers,
-                 dim_feedforward,dropout,pad_idx):
+                 dim_feedforward,dropout,pad_idx,device):
         super(Transformer,self).__init__()
         self.src_vocab_size = src_vocab_size
         self.trg_vocab_size = trg_vocab_size
@@ -40,6 +40,7 @@ class Transformer(nn.Module):
         self.dim_feedforward = dim_feedforward
         self.dropout = dropout
         self.pad_idx = pad_idx
+        self.device = device
 
         self.src_embedding = nn.Embedding(src_vocab_size,d_model)
         self.trg_embedding = nn.Embedding(trg_vocab_size,d_model)
@@ -65,6 +66,6 @@ class Transformer(nn.Module):
     def get_masks(self,src,trg):
         sz = trg.shape[0]
         trg_mask = self.transformer.generate_square_subsequent_mask(sz)
-        src_kp_mask = (src == self.pad_idx).transpose(0,1)
-        trg_kp_mask = (trg == self.pad_idx).transpose(0,1)
+        src_kp_mask = (src == self.pad_idx).transpose(0,1).to(self.device)
+        trg_kp_mask = (trg == self.pad_idx).transpose(0,1).to(self.device)
         return trg_mask,src_kp_mask,trg_kp_mask

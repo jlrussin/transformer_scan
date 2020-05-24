@@ -34,7 +34,7 @@ def train(args):
         model = Transformer(src_vocab_size,trg_vocab_size,args.d_model,
                             args.nhead,args.num_encoder_layers,
                             args.num_decoder_layers,args.dim_feedforward,
-                            args.dropout,pad_idx)
+                            args.dropout,pad_idx,device)
     if args.load_weights_from is not None:
         model.load_state_dict(torch.load(args.load_weights_from))
     model = model.to(device)
