@@ -21,7 +21,7 @@ nvidia_fancontrol full $gpu
 done
 
 python main.py \
---split simple \
+--split addjump \
 --batch_size 32 \
 --num_epochs 2 \
 --model_type transformer \
@@ -33,8 +33,8 @@ python main.py \
 --dropout 0.1 \
 --learning_rate 0.001 \
 --results_dir transformer \
---out_data_file train_defaults_simple.json \
---checkpoint_path ../weights/defaults_simple.pt \
+--out_data_file train_defaults_jump.json \
+--checkpoint_path ../weights/defaults_addjump.pt \
 --checkpoint_every 1 \
 --record_loss_every 20
 

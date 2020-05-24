@@ -36,7 +36,7 @@ parser.add_argument('--learning_rate', type=float, default=0.001,
                     help='Fixed learning rate for Adam optimizer')
 
 # Output options
-parser.add_argument('--results_dir', default='../results/',
+parser.add_argument('--results_dir', default='transformer',
                     help='Results subdirectory to save results')
 parser.add_argument('--out_data_file', default='train_results.json',
                     help='Name of output data file with training loss data')

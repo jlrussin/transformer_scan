@@ -29,13 +29,11 @@ def build_scan(split, batch_size, device):
     test_ = TranslationDataset(test_path,exts,fields)
 
     # Build vocabs: fields ensure same vocab used for each partition
-    SRC.build_vocab(train)
-    TRG.build_vocab(train)
+    SRC.build_vocab(train_)
+    TRG.build_vocab(train_)
 
     # BucketIterator ensures similar sequence lengths to minimize padding
-    train, dev, test = BucketIterator.splits(
-        (train_, dev_, test_),
-        batch_size = batch_size),
-        device = device)
+    train, dev, test = BucketIterator.splits((train_, dev_, test_),
+        batch_size = batch_size, device = device)
 
     return SRC, TRG, train, dev, test

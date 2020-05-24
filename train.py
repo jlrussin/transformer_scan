@@ -10,7 +10,6 @@ import torch.optim as optim
 from data import build_scan
 from models.transformer import *
 from test import test
-from utils import *
 
 
 def train(args):
@@ -51,10 +50,10 @@ def train(args):
 
     # Setup things to record
     loss_data = [] # records losses
-    train_acc = [] # records train accuracy
-    val_acc = [] # records validation accuracy
-    test_acc = [] # records test accuracy
-    best_val_acc = float('-inf') # best val accuracy (for doing early stopping)
+    train_accs = [] # records train accuracy
+    dev_accs = [] # records development accuracy
+    test_accs = [] # records test accuracy
+    best_dev_acc = float('-inf') # best dev accuracy (for doing early stopping)
 
     # Training loop:
     for epoch in range(args.num_epochs):
@@ -80,11 +79,11 @@ def train(args):
             print("Training accuracy is ", train_acc)
             train_accs.append(train_acc)
 
-            # Checkpoint on validation data
-            print("Checking validation accuracy...")
-            val_acc = test(val_data, model, pad_idx, device, args)
-            print("Validation accuracy is ", val_acc)
-            val_accs.append(val_acc)
+            # Checkpoint on development data
+            print("Checking development accuracy...")
+            dev_acc = test(dev_data, model, pad_idx, device, args)
+            print("Development accuracy is ", dev_acc)
+            dev_accs.append(dev_acc)
 
             # Checkpoint on test data
             print("Checking test accuracy...")
@@ -93,20 +92,20 @@ def train(args):
             test_accs.append(test_acc)
 
             # Write stats file
-            results_path = 'results/%s' % (args.results_dir)
+            results_path = '../results/%s' % (args.results_dir)
             if not os.path.isdir(results_path):
                 os.mkdir(results_path)
             stats = {'loss_data':loss_data,
                      'train_accs':train_accs,
-                     'val_accs':val_accs,
+                     'dev_accs':dev_accs,
                      'test_accs':test_accs}
             results_file_name = '%s/%s' % (results_path,args.out_data_file)
             with open(results_file_name, 'w') as f:
                 json.dump(stats, f)
 
             # Save model weights
-            if val_acc > best_val_acc: # use val to decide to save
-                best_val_acc = val_acc
+            if dev_acc > best_dev_acc: # use dev to decide to save
+                best_dev_acc = dev_acc
                 if args.checkpoint_path is not None:
                     torch.save(model.state_dict(),
                                args.checkpoint_path)

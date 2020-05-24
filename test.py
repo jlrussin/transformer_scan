@@ -14,7 +14,7 @@ def test(data, model, pad_idx, device, args):
             mask = batch.trg == pad_idx # mask out padding
             correct = torch.logical_or(mask,correct_pred)
             correct = correct.all(0).tolist()
-            correct_list += correct
+            all_correct_trials += correct
 
     accuracy = np.mean(all_correct_trials)
     model.train()
