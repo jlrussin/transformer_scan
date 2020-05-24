@@ -22,6 +22,7 @@ done
 
 python main.py \
 --split simple \
+--num_runs 10 \
 --batch_size 32 \
 --num_epochs 2 \
 --model_type transformer \
@@ -33,7 +34,7 @@ python main.py \
 --dropout 0.1 \
 --learning_rate 0.001 \
 --results_dir transformer \
---out_data_file train_defaults_simple.json \
+--out_data_file train_defaults_simple \
 --checkpoint_path ../weights/defaults_simple.pt \
 --checkpoint_every 1 \
 --record_loss_every 20

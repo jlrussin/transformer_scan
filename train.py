@@ -12,7 +12,7 @@ from models.transformer import *
 from test import test
 
 
-def train(args):
+def train(run,args):
 
     # CUDA
     use_cuda = torch.cuda.is_available()
@@ -99,13 +99,14 @@ def train(args):
                      'train_accs':train_accs,
                      'dev_accs':dev_accs,
                      'test_accs':test_accs}
-            results_file_name = '%s/%s' % (results_path,args.out_data_file)
-            with open(results_file_name, 'w') as f:
+            results_fn = '%s/%s%d.json' % (results_path,args.out_data_file,run)
+            with open(results_fn, 'w') as f:
                 json.dump(stats, f)
 
             # Save model weights
-            if dev_acc > best_dev_acc: # use dev to decide to save
-                best_dev_acc = dev_acc
-                if args.checkpoint_path is not None:
-                    torch.save(model.state_dict(),
-                               args.checkpoint_path)
+            if run == 0: #first run only
+                if dev_acc > best_dev_acc: # use dev to decide to save
+                    best_dev_acc = dev_acc
+                    if args.checkpoint_path is not None:
+                        torch.save(model.state_dict(),
+                                   args.checkpoint_path)

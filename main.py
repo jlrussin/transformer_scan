@@ -8,6 +8,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--split',
                     choices = ['simple','addjump'],
                     help='SCAN split to use for training and testing')
+parser.add_argument('--num_runs', type=int, default=1,
+                    help='Number of runs to do.')
 parser.add_argument('--batch_size', type=int, default=64,
                     help='Samples per batch')
 parser.add_argument('--num_epochs', type=int, default=10,
@@ -42,13 +44,14 @@ parser.add_argument('--out_data_file', default='train_results.json',
                     help='Name of output data file with training loss data')
 parser.add_argument('--checkpoint_path',default=None,
                     help='Path to output saved weights.')
-parser.add_argument('--checkpoint_every', type=int, default=5,
+parser.add_argument('--checkpoint_every', type=int, default=1,
                     help='Epochs before evaluating model and saving weights')
 parser.add_argument('--record_loss_every', type=int, default=20,
                     help='iters before printing and recording loss')
 
 def main(args):
-    train(args)
+    for run in range(args.num_runs):
+        train(run,args)
 
 if __name__ == '__main__':
     args = parser.parse_args()
