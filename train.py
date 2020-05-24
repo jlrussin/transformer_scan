@@ -73,7 +73,7 @@ def train(args):
                 loss_data.append(loss_datapoint)
 
         # Checkpoint
-        if epoch_count % args.checkpoint_every == 0:
+        if epoch % args.checkpoint_every == 0:
             # Checkpoint on train data
             print("Checking training accuracy...")
             train_acc = test(train_data, model, pad_idx, device, args)
