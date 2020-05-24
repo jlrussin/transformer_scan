@@ -2,54 +2,47 @@
 
 import os
 import json
-import numpy as np
 
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import DataLoader
 
-from data import ScanDataset, get_dataset, SCAN_collate
+from data import build_scan
 from models.transformer import *
 from test import test
 from utils import *
 
 
 def train(args):
+
     # CUDA
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda:0" if use_cuda else "cpu")
 
-    # Vocab
-    with open(args.load_vocab_json,'r') as f:
-        vocab = json.load(f)
-    in_vocab_size = len(vocab['in_token_to_idx'])
-    out_vocab_size = len(vocab['out_idx_to_token'])
+    # Data
+    SRC, TRG, train_data, dev_data, test_data = build_scan(args.split,
+                                                           args.batch_size,
+                                                           device)
 
-    # Datasets
-    dataset = get_dataset(args.split,'train',vocab)
-    split_id = int(0.8*len(all_train_data))
-    train_data = [all_train_data[i] for i in range(split_id)]
-    val_data = [all_train_data[i] for i in range(split_id,len(all_train_data))]
-    test_data = get_dataset(args.split,'test',vocab)
-
-    # Dataloaders
-    train_loader = DataLoader(train_data,args.batch_size,
-                              shuffle=True,collate_fn=SCAN_collate)
-    val_loader = DataLoader(val_data,args.batch_size,
-                            shuffle=True,collate_fn=SCAN_collate)
-    test_loader = DataLoader(test_data,args.batch_size,
-                             shuffle=True,collate_fn=SCAN_collate)
+    # vocab
+    src_vocab_size = len(SRC.vocab.stoi)
+    trg_vocab_size = len(TRG.vocab.stoi)
+    pad_idx = SRC.vocab[SRC.pad_token]
+    assert TRG.vocab[TRG.pad_token] == pad_idx
 
     # Model
     if args.model_type == 'transformer':
-        model = Transformer()
+        model = Transformer(src_vocab_size,trg_vocab_size,args.d_model,
+                            args.nhead,args.num_encoder_layers,
+                            args.num_decoder_layers,args.dim_feedforward,
+                            args.dropout,pad_idx)
     if args.load_weights_from is not None:
         model.load_state_dict(torch.load(args.load_weights_from))
-    model.to(device)
+    model = model.to(device)
+    model.train()
 
     # Loss function
-    loss_fn = nn.NLLLoss(reduction='mean',ignore_index=-100)
+    loss_fn = nn.CrossEntropyLoss(ignore_index=pad_idx)
     loss_fn = loss_fn.to(device)
 
     # Optimizer
@@ -61,21 +54,14 @@ def train(args):
     train_acc = [] # records train accuracy
     val_acc = [] # records validation accuracy
     test_acc = [] # records test accuracy
-    best_val_acc = -np.inf # best val accuracy (for doing early stopping)
+    best_val_acc = float('-inf') # best val accuracy (for doing early stopping)
 
     # Training loop:
-    for epoch in range(num_epochs):
-        for iter,sample in enumerate(train_loader):
-            # Forward pass
-            instructions, true_actions, _, _ = sample
-            instructions = [ins.to(device) for ins in instructions]
-            true_actions = [ta.to(device) for ta in true_actions]
+    for epoch in range(args.num_epochs):
+        for iter,batch in enumerate(train_data):
             optimizer.zero_grad()
-            actions,padded_true_actions = model(instructions,true_actions)
-            # Compute NLLLoss
-            true_actions = padded_true_actions.to(device)
-            loss = loss_fn(actions,padded_true_actions)
-            # Backward pass
+            out = model(batch.src,batch.trg)
+            loss = loss_fn(out.view(-1,trg_vocab_size),batch.trg.view(-1))
             loss.backward()
             optimizer.step()
             # Record loss
@@ -90,19 +76,19 @@ def train(args):
         if epoch_count % args.checkpoint_every == 0:
             # Checkpoint on train data
             print("Checking training accuracy...")
-            train_acc = test(train_loader, model, device, args)
+            train_acc = test(train_data, model, pad_idx, device, args)
             print("Training accuracy is ", train_acc)
             train_accs.append(train_acc)
 
             # Checkpoint on validation data
             print("Checking validation accuracy...")
-            val_acc = test(val_loader, model, device, args)
+            val_acc = test(val_data, model, pad_idx, device, args)
             print("Validation accuracy is ", val_acc)
             val_accs.append(val_acc)
 
             # Checkpoint on test data
             print("Checking test accuracy...")
-            test_acc = test(test_loader, model, device, args)
+            test_acc = test(test_data, model, pad_idx, device, args)
             print("Test accuracy is ", test_acc)
             test_accs.append(test_acc)
 

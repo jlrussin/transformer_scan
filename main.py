@@ -8,16 +8,26 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--split',
                     choices = ['simple','addjump'],
                     help='SCAN split to use for training and testing')
-parser.add_argument('--load_vocab_json',default=None,
-                    help='Path to vocab json file')
 parser.add_argument('--batch_size', type=int, default=64,
                     help='Samples per batch')
-parser.add_argument('--num_iters', type=int, default=100000,
-                    help='Number of optimizer steps before stopping')
+parser.add_argument('--num_epochs', type=int, default=100000,
+                    help='Number of training epochs')
 
 # Models
 parser.add_argument('--model_type', choices=['transformer'],
                     default='transformer', help='Type of seq2seq model to use.')
+parser.add_argument('--d_model', type=int, default=12,
+                    help='Dimension of inputs/outputs in transformer')
+parser.add_argument('--nhead', type=int, default=2,
+                    help='Number of heads in transformer multihead attention')
+parser.add_argument('--num_encoder_layers', type=int, default=2,
+                    help='Number of layers in transformer encoder')
+parser.add_argument('--num_decoder_layers', type=int, default=2,
+                    help='Number of layers in transformer decoder')
+parser.add_argument('--dim_feedforward', type=int, default=20,
+                    help='Dimension of feedforward layers in transformer')
+parser.add_argument('--dropout', type=float, default=0.1,
+                    help='Dropout rate')
 parser.add_argument('--load_weights_from', default=None,
                     help='Path to saved weights')
 
