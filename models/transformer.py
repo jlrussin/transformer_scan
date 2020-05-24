@@ -65,10 +65,6 @@ class Transformer(nn.Module):
     def get_masks(self,src,trg):
         sz = trg.shape[0]
         trg_mask = self.transformer.generate_square_subsequent_mask(sz)
-        src_kp_mask = torch.zeros_like(src,dtype=torch.float64)
-        src_kp_mask[src == self.pad_idx] = float('-inf')
-        src_kp_mask = src_kp_mask.transpose(0,1)
-        trg_kp_mask = torch.zeros_like(trg,dtype=torch.float64)
-        trg_kp_mask[trg == self.pad_idx] = float('-inf')
-        trg_kp_mask = trg_kp_mask.transpose(0,1)
+        src_kp_mask = (src == self.pad_idx).transpose(0,1)
+        trg_kp_mask = (trg == self.pad_idx).transpose(0,1)
         return trg_mask,src_kp_mask,trg_kp_mask
