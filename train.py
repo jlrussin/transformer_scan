@@ -66,7 +66,8 @@ def train(run,args):
             # Record loss
             if iter % args.record_loss_every == 0:
                 loss_datapoint = loss.data.item()
-                print('Epoch:', epoch,
+                print('Run:', run,
+                      'Epoch:', epoch,
                       'Iter:', iter,
                       'Loss:', loss_datapoint)
                 loss_data.append(loss_datapoint)
