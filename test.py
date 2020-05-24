@@ -11,8 +11,10 @@ def test(data, model, pad_idx, device, args):
             out = model(batch.src, batch.trg)
             preds = torch.argmax(out,dim=2)
             correct_pred = preds == batch.trg
+            correct_pred = correct_pred.cpu().numpy()
             mask = batch.trg == pad_idx # mask out padding
-            correct = torch.logical_or(mask,correct_pred)
+            mask = mask.cpu().numpy()
+            correct = np.logical_or(mask,correct_pred)
             correct = correct.all(0).tolist()
             all_correct_trials += correct
 
