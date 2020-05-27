@@ -8,9 +8,9 @@ from torchtext.datasets import TranslationDataset
 def build_scan(split, batch_size, device):
     # Get paths and filenames of each partition of split
     if split == 'simple':
-        path = '../data/scan/simple/'
+        path = 'data/scan/simple/'
     elif split == 'addjump':
-        path = '../data/scan/addjump/'
+        path = 'data/scan/addjump/'
     else:
         assert split not in ['simple','addjump'], "Unknown split"
     train_path = os.path.join(path,'train')

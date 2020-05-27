@@ -93,7 +93,7 @@ def train(run,args):
             test_accs.append(test_acc)
 
             # Write stats file
-            results_path = '../results/%s' % (args.results_dir)
+            results_path = 'results/%s' % (args.results_dir)
             if not os.path.isdir(results_path):
                 os.mkdir(results_path)
             stats = {'loss_data':loss_data,

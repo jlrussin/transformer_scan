@@ -51,20 +51,21 @@ class Transformer(nn.Module):
         self.src_embedding = nn.Embedding(src_vocab_size,d_model)
         self.trg_embedding = nn.Embedding(trg_vocab_size,d_model)
         self.positional_encoding = PositionalEncoding(d_model,dropout)
-
         # Encoder
-        encoder_layer = TransformerEncoderLayer(d_model, nhead, dim_feedforward, dropout, self.activation)
+        encoder_layer = TransformerEncoderLayer(d_model, nhead, dim_feedforward,
+                                                dropout, self.activation)
         encoder_norm = nn.LayerNorm(d_model)
-        self.encoder = TransformerEncoder(encoder_layer, num_encoder_layers, encoder_norm)
-
+        self.encoder = TransformerEncoder(encoder_layer, num_encoder_layers,
+                                          encoder_norm)
         # Decoder
-        decoder_layer = TransformerDecoderLayer(d_model, nhead, dim_feedforward, dropout, self.activation)
+        decoder_layer = TransformerDecoderLayer(d_model, nhead, dim_feedforward,
+                                                dropout, self.activation)
         decoder_norm = nn.LayerNorm(d_model)
-        self.decoder = TransformerDecoder(decoder_layer, num_decoder_layers, decoder_norm)
-
+        self.decoder = TransformerDecoder(decoder_layer, num_decoder_layers,
+                                          decoder_norm)
         # Output
         self.linear = nn.Linear(d_model,trg_vocab_size)
-
+        # Initialize
         self._reset_parameters()
 
     def forward(self,src,trg):
@@ -125,7 +126,8 @@ class TransformerEncoder(nn.Module):
         attn_weights = []
         output = src
         for mod in self.layers:
-            output, attn_wts = mod(output, src_mask=mask, src_kp_mask=src_kp_mask)
+            output, attn_wts = mod(output, src_mask=mask,
+                                   src_kp_mask=src_kp_mask)
             attn_weights.append(attn_wts)
 
         if self.norm is not None:
@@ -159,7 +161,8 @@ class TransformerDecoder(nn.Module):
 
 
 class TransformerEncoderLayer(nn.Module):
-    def __init__(self, d_model, nhead, dim_feedforward=2048, dropout=0.1, activation='relu'):
+    def __init__(self, d_model, nhead, dim_feedforward=2048, dropout=0.1,
+                 activation='relu'):
         super(TransformerEncoderLayer, self).__init__()
         self.d_model = d_model
         self.nhead = nhead
@@ -167,20 +170,16 @@ class TransformerEncoderLayer(nn.Module):
 
         # Self attention
         self.self_attn = nn.MultiheadAttention(d_model, nhead, dropout=dropout)
-
         # Feedforward
         self.linear1 = nn.Linear(d_model, dim_feedforward)
         self.dropout = nn.Dropout(dropout)
         self.linear2 = nn.Linear(dim_feedforward, d_model)
-
         # Normalization
         self.norm1 = nn.LayerNorm(d_model)
         self.norm2 = nn.LayerNorm(d_model)
-
         # Dropout
         self.dropout1 = nn.Dropout(dropout)
         self.dropout2 = nn.Dropout(dropout)
-
         # Activation
         self.activation = _get_activation_fn(activation)
 
@@ -196,42 +195,42 @@ class TransformerEncoderLayer(nn.Module):
 
 
 class TransformerDecoderLayer(nn.Module):
-    def __init__(self, d_model, nhead, dim_feedforward=2048, dropout=0.1, activation='relu'):
+    def __init__(self, d_model, nhead, dim_feedforward=2048, dropout=0.1,
+                 activation='relu'):
         super(TransformerDecoderLayer, self).__init__()
         self.d_model = d_model
         self.nhead = nhead
         self.dim_feedforward = dim_feedforward
 
         # Self attention
-        self.self_attn = nn.MultiheadAttention(d_model, nhead, dropout=dropout)
-        self.multihead_attn = nn.MultiheadAttention(d_model, nhead, dropout=dropout)
-
+        self.self_attn = nn.MultiheadAttention(d_model, nhead,
+                                               dropout=dropout)
+        self.multihead_attn = nn.MultiheadAttention(d_model, nhead,
+                                                    dropout=dropout)
         # Feedforward
         self.linear1 = nn.Linear(d_model, dim_feedforward)
         self.dropout = nn.Dropout(dropout)
         self.linear2 = nn.Linear(dim_feedforward, d_model)
-
         # Normalization
         self.norm1 = nn.LayerNorm(d_model)
         self.norm2 = nn.LayerNorm(d_model)
         self.norm3 = nn.LayerNorm(d_model)
-
         # Dropout
         self.dropout1 = nn.Dropout(dropout)
         self.dropout2 = nn.Dropout(dropout)
         self.dropout3 = nn.Dropout(dropout)
-
         # Activation
         self.activation = _get_activation_fn(activation)
 
     def forward(self, trg, memory, trg_mask=None, memory_mask=None,
                 trg_kp_mask=None, memory_kp_mask=None):
-        trg2, attn_weights1 = self.self_attn(trg, trg, trg,
-                                  attn_mask=trg_mask, key_padding_mask=trg_kp_mask)
+        trg2, attn_weights1 = self.self_attn(trg, trg, trg, attn_mask=trg_mask,
+                                        key_padding_mask=trg_kp_mask)
         trg = trg + self.dropout1(trg2)
         trg = self.norm1(trg)
-        trg2, attn_weights2 = self.multihead_attn(trg, memory, memory, attn_mask=memory_mask,
-                                  key_padding_mask=memory_kp_mask)
+        trg2, attn_weights2 = self.multihead_attn(trg, memory, memory,
+                                        attn_mask=memory_mask,
+                                        key_padding_mask=memory_kp_mask)
         trg = trg + self.dropout2(trg2)
         trg = self.norm2(trg)
         trg2 = self.linear2(self.dropout(self.activation(self.linear1(trg))))

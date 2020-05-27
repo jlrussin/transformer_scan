@@ -8,7 +8,7 @@ def test(data, model, pad_idx, device, args):
     with torch.no_grad():
         all_correct_trials = [] # list of booleans indicating whether correct
         for batch in data:
-            out = model(batch.src, batch.trg)
+            out, attn_wts = model(batch.src, batch.trg)
             preds = torch.argmax(out,dim=2)
             correct_pred = preds == batch.trg
             correct_pred = correct_pred.cpu().numpy()
