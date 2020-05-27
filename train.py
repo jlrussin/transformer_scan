@@ -59,7 +59,7 @@ def train(run,args):
     for epoch in range(args.num_epochs):
         for iter,batch in enumerate(train_data):
             optimizer.zero_grad()
-            out = model(batch.src,batch.trg)
+            out, attn_wts = model(batch.src,batch.trg)
             loss = loss_fn(out.view(-1,trg_vocab_size),batch.trg.view(-1))
             loss.backward()
             optimizer.step()
