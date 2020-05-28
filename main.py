@@ -10,9 +10,9 @@ parser.add_argument('--split',
                     help='SCAN split to use for training and testing')
 parser.add_argument('--num_runs', type=int, default=1,
                     help='Number of runs to do.')
-parser.add_argument('--batch_size', type=int, default=64,
+parser.add_argument('--batch_size', type=int, default=32,
                     help='Samples per batch')
-parser.add_argument('--num_epochs', type=int, default=10,
+parser.add_argument('--num_epochs', type=int, default=2,
                     help='Number of training epochs')
 
 # Models
