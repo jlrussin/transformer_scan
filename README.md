@@ -25,7 +25,16 @@ SCAN dataset: https://arxiv.org/abs/1711.00350
   * data.py (code for dealing with SCAN dataset)
   * test.py (function used for testing and computing accuracy)
   * results.ipynb (notebook for displaying results in results/)
-
+  
+### Dependencies
+[pytorch](https://pytorch.org/)
+```
+conda install pytorch torchvision -c pytorch
+```
+[torchtext](https://pytorch.org/text/)
+```
+conda install -c pytorch torchtext
+```
 ### To run:
 Simple split:
 ```
