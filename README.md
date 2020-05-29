@@ -25,6 +25,7 @@ SCAN dataset: https://arxiv.org/abs/1711.00350
   * data.py (code for dealing with SCAN dataset)
   * test.py (function used for testing and computing accuracy)
   * results.ipynb (notebook for displaying results in results/)
+  * requirements.txt (list of all requirements)
   
 ### Dependencies
 [pytorch](https://pytorch.org/)
@@ -35,6 +36,7 @@ conda install pytorch torchvision -c pytorch
 ```
 conda install -c pytorch torchtext
 ```
+The complete list of requirments in my anaconda environment are in requirements.txt. This was included in case there is a dependency that I missed, but many in that list will not be necessary to run the code in this repository. 
 ### To run:
 Simple split:
 ```
