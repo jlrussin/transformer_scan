@@ -3,7 +3,7 @@ certifi==2020.4.5.1
 cffi==1.12.3
 chardet==3.0.4
 cloudpickle==1.2.2
-cryptography==2.9.2
+cryptography==3.2
 cycler==0.10.0
 decorator==4.4.1
 flann==1.9.1
